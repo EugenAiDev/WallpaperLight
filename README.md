@@ -2,6 +2,10 @@
 
 Лёгкий менеджер обоев для нескольких мониторов Windows 11. C# / .NET 10 / WinForms, без сторонних runtime-библиотек, WebView, служб и сетевых запросов приложения.
 
+[Скачать готовую автономную версию](https://github.com/EugenAiDev/WallpaperLight/releases/latest) · [Проверки сборки](https://github.com/EugenAiDev/WallpaperLight/actions/workflows/build.yml)
+
+Для запуска распакуйте весь ZIP и откройте `WallpaperLight.exe`. Устанавливать .NET не требуется.
+
 ## Текущее состояние — папки, циклы, трей и автозапуск
 
 - Обнаружение подключённых мониторов через `IDesktopWallpaper`.
