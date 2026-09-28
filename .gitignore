@@ -1,0 +1,23 @@
+**/bin/
+**/obj/
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+TestResults/
+artifacts/
+publish/
+**/data/
+.dotnet/
+.tools/
+.nuget/
+monitors.json
+
+# Local assistant metadata and diagnostic output
+.codex/
+.agents/
+*.log
+*.zip
+WallpaperLight.prompt.ru.md

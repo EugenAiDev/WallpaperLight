@@ -1,0 +1,25 @@
+name: Windows build
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Build, check and package
+        shell: pwsh
+        run: ./tools/Publish-Release.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WallpaperLight-win-x64-self-contained
+          path: |
+            artifacts/WallpaperLight-win-x64-self-contained.zip
+            artifacts/WallpaperLight-win-x64-self-contained.zip.sha256
+          if-no-files-found: error

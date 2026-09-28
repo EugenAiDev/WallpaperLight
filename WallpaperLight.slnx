@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="WallpaperLight/WallpaperLight.csproj" />
+  <Project Path="tests/WallpaperLight.Checks/WallpaperLight.Checks.csproj" />
+</Solution>

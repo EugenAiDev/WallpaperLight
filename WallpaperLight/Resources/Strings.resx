@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <data name="ApplyFailed" xml:space="preserve">
+    <value>Could not apply the image. Check the file and monitor connection.</value>
+  </data>
+  <data name="ChooseWallpaper" xml:space="preserve">
+    <value>Choose wallpaper…</value>
+  </data>
+  <data name="CurrentWallpaper" xml:space="preserve">
+    <value>Current wallpaper</value>
+  </data>
+  <data name="DeviceId" xml:space="preserve">
+    <value>Windows device ID</value>
+  </data>
+  <data name="ImageFilter" xml:space="preserve">
+    <value>Images (*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp</value>
+  </data>
+  <data name="Landscape" xml:space="preserve">
+    <value>Landscape</value>
+  </data>
+  <data name="Monitor" xml:space="preserve">
+    <value>Monitor</value>
+  </data>
+  <data name="MonitorCount" xml:space="preserve">
+    <value>Connected monitors: {0}. Choose an image to apply it to one display.</value>
+  </data>
+  <data name="MonitorDisconnected" xml:space="preserve">
+    <value>The monitor has been disconnected. Refresh the monitor list.</value>
+  </data>
+  <data name="NoMonitors" xml:space="preserve">
+    <value>No connected monitors found.</value>
+  </data>
+  <data name="NoWallpaper" xml:space="preserve">
+    <value>No image assigned</value>
+  </data>
+  <data name="Portrait" xml:space="preserve">
+    <value>Portrait</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Refresh monitors</value>
+  </data>
+  <data name="RefreshFailed" xml:space="preserve">
+    <value>Could not refresh monitors.</value>
+  </data>
+  <data name="StartupFailed" xml:space="preserve">
+    <value>Wallpaper Light could not start.</value>
+  </data>
+  <data name="WallpaperApplied" xml:space="preserve">
+    <value>Wallpaper applied to the selected monitor.</value>
+  </data>
+  <data name="ActiveFolder">
+    <value>Folder selected by orientation</value>
+  </data>
+  <data name="AlreadyCurrent">
+    <value>The only available image is already applied.</value>
+  </data>
+  <data name="Browse">
+    <value>Browse…</value>
+  </data>
+  <data name="Cancel">
+    <value>Cancel</value>
+  </data>
+  <data name="ChangeAll">
+    <value>Change all</value>
+  </data>
+  <data name="FolderNotSet">
+    <value>Set the shared folder in Settings.</value>
+  </data>
+  <data name="FolderOpened">
+    <value>Folder opened.</value>
+  </data>
+  <data name="InvalidFolder">
+    <value>Specify an existing folder with a full path, or leave the field empty.</value>
+  </data>
+  <data name="InvalidImage">
+    <value>The image is damaged or cannot be decoded.</value>
+  </data>
+  <data name="LandscapeFolder">
+    <value>Horizontal images</value>
+  </data>
+  <data name="Language">
+    <value>Interface language</value>
+  </data>
+  <data name="NewerSettings">
+    <value>Settings use a newer version. Editing is disabled; the original file is preserved.</value>
+  </data>
+  <data name="Next">
+    <value>Next</value>
+  </data>
+  <data name="NoImages">
+    <value>No supported images found. Current wallpaper kept.</value>
+  </data>
+  <data name="NoPrevious">
+    <value>No earlier available image in history.</value>
+  </data>
+  <data name="NoUsableImages">
+    <value>No usable images. Check files and click Refresh.</value>
+  </data>
+  <data name="OpenFolder">
+    <value>Open folder</value>
+  </data>
+  <data name="OperationFailed">
+    <value>Operation failed.</value>
+  </data>
+  <data name="PortraitFolder">
+    <value>Vertical images</value>
+  </data>
+  <data name="Previous">
+    <value>Previous</value>
+  </data>
+  <data name="Random">
+    <value>Random</value>
+  </data>
+  <data name="RandomMode">
+    <value>Random, no repeats</value>
+  </data>
+  <data name="RecoveredSettings">
+    <value>Settings were damaged and reset. Backup:</value>
+  </data>
+  <data name="RefreshAll">
+    <value>Refresh</value>
+  </data>
+  <data name="Save">
+    <value>Save</value>
+  </data>
+  <data name="SelectFolder">
+    <value>Select wallpaper folder</value>
+  </data>
+  <data name="SelectionMode">
+    <value>Order:</value>
+  </data>
+  <data name="Sequential">
+    <value>Sequential</value>
+  </data>
+  <data name="Settings">
+    <value>Settings</value>
+  </data>
+  <data name="SettingsSaved">
+    <value>Settings saved.</value>
+  </data>
+  <data name="SettingsUnavailable">
+    <value>Settings cannot be read or saved. Move the app to a writable folder. Editing is disabled.</value>
+  </data>
+  <data name="SharedFoldersHint">
+    <value>Two folders for all monitors. Each display uses the folder for its orientation. Subfolders are excluded.</value>
+  </data>
+  <data name="SystemLanguage">
+    <value>System default</value>
+  </data>
+  <data name="UnsupportedImage">
+    <value>Supported formats: JPG, JPEG, PNG, BMP.</value>
+  </data>
+  <data name="StartWithWindows" xml:space="preserve">
+    <value>Start with Windows (at sign-in)</value>
+  </data>
+  <data name="StartMinimized" xml:space="preserve">
+    <value>Start minimized to the tray</value>
+  </data>
+  <data name="TrayHint" xml:space="preserve">
+    <value>Closing the window hides it in the tray. To quit, use Exit in the tray menu.</value>
+  </data>
+  <data name="OpenApplication" xml:space="preserve">
+    <value>Open Wallpaper Light</value>
+  </data>
+  <data name="ExitApplication" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="AutostartFailed" xml:space="preserve">
+    <value>Could not configure Windows startup:</value>
+  </data>
+  <data name="StartupConflict" xml:space="preserve">
+    <value>The startup entry belongs to another command. It was preserved.</value>
+  </data>
+  <data name="Theme">
+    <value>Theme</value>
+  </data>
+  <data name="LightTheme">
+    <value>Light</value>
+  </data>
+  <data name="DarkTheme">
+    <value>Dark</value>
+  </data>
+  <data name="PrimaryMonitor">
+    <value>Primary monitor</value>
+  </data>
+  <data name="Position">
+    <value>Position</value>
+  </data>
+</root>

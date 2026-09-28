@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <data name="ApplyFailed" xml:space="preserve">
+    <value>Не удалось применить изображение. Проверьте файл и подключение монитора.</value>
+  </data>
+  <data name="ChooseWallpaper" xml:space="preserve">
+    <value>Выбрать обои…</value>
+  </data>
+  <data name="CurrentWallpaper" xml:space="preserve">
+    <value>Текущие обои</value>
+  </data>
+  <data name="DeviceId" xml:space="preserve">
+    <value>Идентификатор устройства Windows</value>
+  </data>
+  <data name="ImageFilter" xml:space="preserve">
+    <value>Изображения (*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp</value>
+  </data>
+  <data name="Landscape" xml:space="preserve">
+    <value>Горизонтальный</value>
+  </data>
+  <data name="Monitor" xml:space="preserve">
+    <value>Монитор</value>
+  </data>
+  <data name="MonitorCount" xml:space="preserve">
+    <value>Подключено мониторов: {0}. Выберите изображение для нужного экрана.</value>
+  </data>
+  <data name="MonitorDisconnected" xml:space="preserve">
+    <value>Монитор отключён. Обновите список мониторов.</value>
+  </data>
+  <data name="NoMonitors" xml:space="preserve">
+    <value>Подключённые мониторы не найдены.</value>
+  </data>
+  <data name="NoWallpaper" xml:space="preserve">
+    <value>Изображение не назначено</value>
+  </data>
+  <data name="Portrait" xml:space="preserve">
+    <value>Вертикальный</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Обновить мониторы</value>
+  </data>
+  <data name="RefreshFailed" xml:space="preserve">
+    <value>Не удалось обновить список мониторов.</value>
+  </data>
+  <data name="StartupFailed" xml:space="preserve">
+    <value>Не удалось запустить Wallpaper Light.</value>
+  </data>
+  <data name="WallpaperApplied" xml:space="preserve">
+    <value>Обои применены к выбранному монитору.</value>
+  </data>
+  <data name="ActiveFolder">
+    <value>Папка по ориентации монитора</value>
+  </data>
+  <data name="AlreadyCurrent">
+    <value>Единственное доступное изображение уже установлено.</value>
+  </data>
+  <data name="Browse">
+    <value>Обзор…</value>
+  </data>
+  <data name="Cancel">
+    <value>Отмена</value>
+  </data>
+  <data name="ChangeAll">
+    <value>Сменить все</value>
+  </data>
+  <data name="FolderNotSet">
+    <value>Укажите общую папку в настройках.</value>
+  </data>
+  <data name="FolderOpened">
+    <value>Папка открыта.</value>
+  </data>
+  <data name="InvalidFolder">
+    <value>Укажите существующую папку полным путём или оставьте поле пустым.</value>
+  </data>
+  <data name="InvalidImage">
+    <value>Изображение повреждено или не может быть прочитано.</value>
+  </data>
+  <data name="LandscapeFolder">
+    <value>Горизонтальные изображения</value>
+  </data>
+  <data name="Language">
+    <value>Язык интерфейса</value>
+  </data>
+  <data name="NewerSettings">
+    <value>Настройки от более новой версии. Редактирование отключено, исходный файл сохранён.</value>
+  </data>
+  <data name="Next">
+    <value>Далее</value>
+  </data>
+  <data name="NoImages">
+    <value>В папке нет подходящих изображений. Текущие обои сохранены.</value>
+  </data>
+  <data name="NoPrevious">
+    <value>В истории больше нет доступных предыдущих изображений.</value>
+  </data>
+  <data name="NoUsableImages">
+    <value>Нет доступных изображений. Проверьте файлы и нажмите «Обновить».</value>
+  </data>
+  <data name="OpenFolder">
+    <value>Открыть папку</value>
+  </data>
+  <data name="OperationFailed">
+    <value>Не удалось выполнить действие.</value>
+  </data>
+  <data name="PortraitFolder">
+    <value>Вертикальные изображения</value>
+  </data>
+  <data name="Previous">
+    <value>Назад</value>
+  </data>
+  <data name="Random">
+    <value>Случайные</value>
+  </data>
+  <data name="RandomMode">
+    <value>Случайно, без повторов</value>
+  </data>
+  <data name="RecoveredSettings">
+    <value>Повреждённые настройки сброшены. Резервная копия:</value>
+  </data>
+  <data name="RefreshAll">
+    <value>Обновить</value>
+  </data>
+  <data name="Save">
+    <value>Сохранить</value>
+  </data>
+  <data name="SelectFolder">
+    <value>Выберите папку с обоями</value>
+  </data>
+  <data name="SelectionMode">
+    <value>Порядок:</value>
+  </data>
+  <data name="Sequential">
+    <value>По порядку</value>
+  </data>
+  <data name="Settings">
+    <value>Настройки</value>
+  </data>
+  <data name="SettingsSaved">
+    <value>Настройки сохранены.</value>
+  </data>
+  <data name="SettingsUnavailable">
+    <value>Нет доступа к настройкам. Перенесите программу в папку с правом записи. Редактирование отключено.</value>
+  </data>
+  <data name="SharedFoldersHint">
+    <value>Две папки для всех мониторов. Каждый экран выбирает папку по ориентации. Подпапки не используются.</value>
+  </data>
+  <data name="SystemLanguage">
+    <value>Как в системе</value>
+  </data>
+  <data name="UnsupportedImage">
+    <value>Поддерживаются JPG, JPEG, PNG, BMP.</value>
+  </data>
+  <data name="StartWithWindows" xml:space="preserve">
+    <value>Запускать с Windows (при входе в систему)</value>
+  </data>
+  <data name="StartMinimized" xml:space="preserve">
+    <value>Запускать свёрнутой в трей</value>
+  </data>
+  <data name="TrayHint" xml:space="preserve">
+    <value>Крестик скрывает окно в трей. Для завершения выберите «Выход» в меню трея.</value>
+  </data>
+  <data name="OpenApplication" xml:space="preserve">
+    <value>Открыть Wallpaper Light</value>
+  </data>
+  <data name="ExitApplication" xml:space="preserve">
+    <value>Выход</value>
+  </data>
+  <data name="AutostartFailed" xml:space="preserve">
+    <value>Не удалось настроить автозапуск:</value>
+  </data>
+  <data name="StartupConflict" xml:space="preserve">
+    <value>Запись автозапуска содержит другую команду. Она сохранена.</value>
+  </data>
+  <data name="Theme">
+    <value>Оформление</value>
+  </data>
+  <data name="LightTheme">
+    <value>Светлое</value>
+  </data>
+  <data name="DarkTheme">
+    <value>Тёмное</value>
+  </data>
+  <data name="PrimaryMonitor">
+    <value>Основной монитор</value>
+  </data>
+  <data name="Position">
+    <value>Положение</value>
+  </data>
+</root>
