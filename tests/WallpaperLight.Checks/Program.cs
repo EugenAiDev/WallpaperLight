@@ -9,6 +9,14 @@ internal static class Program
     {
         try
         {
+            if (args is ["--render-ui", var output])
+            {
+                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                UiRenderChecks.Render(Path.GetFullPath(output));
+                return 0;
+            }
             if (args is ["--unit"])
             {
                 UnitChecks.Run();

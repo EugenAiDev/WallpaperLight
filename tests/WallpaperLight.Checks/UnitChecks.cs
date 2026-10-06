@@ -279,6 +279,88 @@ internal static class UnitChecks
                 edid[57] = 0;
                 Assert(MonitorDetails.ParseEdidName(edid) is null);
             });
+            Check("Timer settings migrate, round trip and reject invalid values", () =>
+            {
+                var service = new SettingsService(Path.Combine(temporary, "timer-settings"));
+                service.Save(new());
+                File.WriteAllText(service.FilePath, "{\"schemaVersion\":1}");
+                Assert(service.Load().Settings.Slideshow == new SlideshowSettings());
+                service.Save(new() { Slideshow = new() { Mode = IntervalMode.Custom, CustomMinutes = 1440, Enabled = false }, Accent = "teal" });
+                Assert(service.Load().Settings.Slideshow.CustomMinutes == 1440 && !service.Load().Settings.Slideshow.Enabled);
+                Throws<InvalidDataException>(() => service.Save(new() { Slideshow = new() { CustomMinutes = 0 } }));
+                Throws<InvalidDataException>(() => service.Save(new() { Slideshow = new() { CustomMinutes = 1441 } }));
+                Throws<InvalidDataException>(() => service.Save(new() { Slideshow = new() { Mode = (IntervalMode)99 } }));
+            });
+            Check("30, 60 and custom timers; delayed ticks never catch up in bursts", () =>
+            {
+                var clock = new ManualClock();
+                var schedule = new SlideshowSchedule(clock);
+                foreach (var pair in new[] { (IntervalMode.ThirtyMinutes, 30), (IntervalMode.SixtyMinutes, 60), (IntervalMode.Custom, 17) })
+                {
+                    schedule.Configure(new() { Mode = pair.Item1, CustomMinutes = 17 });
+                    Assert(schedule.Remaining == TimeSpan.FromMinutes(pair.Item2));
+                    clock.Advance(TimeSpan.FromMinutes(pair.Item2 - 1)); Assert(!schedule.IsDue);
+                    clock.Advance(TimeSpan.FromMinutes(100)); Assert(schedule.IsDue);
+                    schedule.Complete(schedule.Version);
+                    Assert(!schedule.IsDue && schedule.Remaining == TimeSpan.FromMinutes(pair.Item2));
+                }
+            });
+            Check("Random interval range and post-sleep delay then normal schedule", () =>
+            {
+                var clock = new ManualClock(); var schedule = new SlideshowSchedule(clock, new Random(17));
+                var values = new HashSet<double>();
+                schedule.Configure(new() { Mode = IntervalMode.Random });
+                for (int i = 0; i < 300; i++)
+                {
+                    double minutes = schedule.Remaining!.Value.TotalMinutes;
+                    Assert(minutes >= 1 && minutes <= 60); values.Add(minutes);
+                    schedule.Complete(schedule.Version);
+                }
+                Assert(values.Count > 40);
+                schedule.Configure(new() { Mode = IntervalMode.SixtyMinutes });
+                schedule.Suspend(); clock.Advance(TimeSpan.FromHours(20)); Assert(!schedule.IsDue && schedule.Remaining is null);
+                schedule.Resume();
+                Assert(schedule.AfterResume && schedule.Remaining!.Value.TotalMinutes is >= 1 and <= 30);
+                var firstDelay = schedule.Remaining;
+                schedule.Resume(); Assert(schedule.Remaining == firstDelay);
+                clock.Advance(firstDelay!.Value); Assert(schedule.IsDue);
+                schedule.Complete(schedule.Version);
+                Assert(!schedule.AfterResume && schedule.Remaining == TimeSpan.FromHours(1));
+                // Automatic resume starts a new wake cycle even if suspend was missed.
+                schedule.Resume(newCycle: true);
+                Assert(schedule.AfterResume && schedule.Remaining!.Value.TotalMinutes is >= 1 and <= 30);
+            });
+            Check("Pause survives sleep; old operation cannot replace resumed timer", () =>
+            {
+                var clock = new ManualClock(); var schedule = new SlideshowSchedule(clock, new Random(2));
+                schedule.Configure(new()); long oldVersion = schedule.Version;
+                schedule.Suspend(); schedule.Resume(); var delay = schedule.Remaining;
+                schedule.Complete(oldVersion); Assert(schedule.Remaining == delay && schedule.AfterResume);
+                schedule.Configure(new() { Enabled = false });
+                schedule.Suspend(); schedule.Resume(); clock.Advance(TimeSpan.FromDays(2));
+                Assert(!schedule.IsDue && schedule.Remaining is null);
+                schedule.Configure(new()); Assert(schedule.Remaining == TimeSpan.FromMinutes(30));
+            });
+            Check("Hidden form processes timer once for every monitor without revealing window", () =>
+            {
+                string folder = Path.Combine(temporary, "timer-images"); Directory.CreateDirectory(folder);
+                File.WriteAllText(Path.Combine(folder, "a.jpg"), "fake service fixture");
+                File.WriteAllText(Path.Combine(folder, "b.jpg"), "fake service fixture");
+                var clock = new ManualClock(); var schedule = new SlideshowSchedule(clock);
+                var fake = new FakeWallpaper(); var service = new SettingsService(Path.Combine(temporary, "timer-form"));
+                var loaded = new SettingsLoadResult(new() { StartMinimized = true, Folders = new() { Landscape = folder, Portrait = folder } });
+                using var form = new MainForm(fake, service, loaded, schedule);
+                form.Start(); Application.DoEvents(); form.QueueShowFromTray(); Application.DoEvents();
+                Assert(!form.Visible && !form.ShowInTaskbar);
+                clock.Advance(TimeSpan.FromMinutes(30)); form.ProcessSlideshowTick();
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                while (fake.Calls < 2 && watch.Elapsed < TimeSpan.FromSeconds(5)) { Application.DoEvents(); Thread.Sleep(5); }
+                Assert(fake.Calls == 2 && !form.Visible && !schedule.IsDue);
+                form.ProcessSlideshowTick(); Assert(fake.Calls == 2);
+                form.ProcessPowerEvent(false); clock.Advance(TimeSpan.FromHours(3)); form.ProcessPowerEvent(true);
+                form.ProcessSlideshowTick(); Assert(fake.Calls == 2 && schedule.AfterResume);
+                form.ExitApplication();
+            });
             Check("Startup command quoting and foreign entry protection", () =>
             {
                 var store = new FakeStartupStore();
@@ -360,6 +442,14 @@ internal static class UnitChecks
         try { action(); }
         catch (T) { return; }
         throw new InvalidOperationException("Expected " + typeof(T).Name);
+    }
+
+    private sealed class ManualClock : TimeProvider
+    {
+        private long timestamp;
+        public override long TimestampFrequency => TimeSpan.TicksPerSecond;
+        public override long GetTimestamp() => timestamp;
+        public void Advance(TimeSpan time) => timestamp += time.Ticks;
     }
 
     private sealed class FakeStartupStore : IStartupStore

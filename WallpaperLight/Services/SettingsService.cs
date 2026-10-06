@@ -86,6 +86,9 @@ internal sealed class SettingsService(string applicationDirectory)
     {
         if (settings.SchemaVersion != 1 || settings.Language is not ("system" or "ru" or "en") ||
             settings.Theme is not ("system" or "light" or "dark") ||
+            settings.Accent is not ("system" or "blue" or "teal" or "violet") ||
+            settings.Slideshow is null || !Enum.IsDefined(settings.Slideshow.Mode) ||
+            settings.Slideshow.CustomMinutes is < 1 or > 1440 ||
             settings.Folders is null || settings.Folders.Landscape is null || settings.Folders.Portrait is null ||
             settings.Monitors is null || settings.Monitors.Keys.Distinct(StringComparer.OrdinalIgnoreCase).Count() != settings.Monitors.Count ||
             settings.Monitors.Any(pair => string.IsNullOrWhiteSpace(pair.Key) ||

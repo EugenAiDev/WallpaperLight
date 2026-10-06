@@ -192,4 +192,70 @@
   <data name="Position">
     <value>Положение</value>
   </data>
+  <data name="Slideshow">
+    <value>Автосмена</value>
+  </data>
+  <data name="SlideshowEnabled">
+    <value>Включена</value>
+  </data>
+  <data name="SlideshowPaused">
+    <value>Автосмена на паузе</value>
+  </data>
+  <data name="PauseSlideshow">
+    <value>Пауза</value>
+  </data>
+  <data name="ResumeSlideshow">
+    <value>Продолжить</value>
+  </data>
+  <data name="Interval">
+    <value>Интервал</value>
+  </data>
+  <data name="Interval30">
+    <value>30 минут</value>
+  </data>
+  <data name="Interval60">
+    <value>60 минут</value>
+  </data>
+  <data name="IntervalCustom">
+    <value>Свой интервал</value>
+  </data>
+  <data name="IntervalRandom">
+    <value>Случайно: 1–60 минут</value>
+  </data>
+  <data name="CustomMinutes">
+    <value>Свой: минуты (1–1440)</value>
+  </data>
+  <data name="SleepTimerHint">
+    <value>После сна: первая смена через 1–30 минут, затем выбранный интервал.</value>
+  </data>
+  <data name="NextScheduled">
+    <value>Следующая смена в {0}</value>
+  </data>
+  <data name="NextAfterSleep">
+    <value>После сна · следующая смена в {0}</value>
+  </data>
+  <data name="ScheduleDeferred">
+    <value>Ожидание следующей смены по расписанию.</value>
+  </data>
+  <data name="Accent">
+    <value>Цвет акцента</value>
+  </data>
+  <data name="AccentBlue">
+    <value>Синий</value>
+  </data>
+  <data name="AccentTeal">
+    <value>Бирюзовый</value>
+  </data>
+  <data name="AccentViolet">
+    <value>Фиолетовый</value>
+  </data>
+  <data name="Startup">
+    <value>Автозапуск</value>
+  </data>
+  <data name="Window">
+    <value>Окно</value>
+  </data>
+  <data name="SourceFolderShort">
+    <value>Папка</value>
+  </data>
 </root>

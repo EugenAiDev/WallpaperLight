@@ -4,6 +4,14 @@ using System.Text.Json.Serialization;
 namespace WallpaperLight.Models;
 
 internal enum PlaybackMode { Sequential, Random }
+internal enum IntervalMode { ThirtyMinutes, SixtyMinutes, Custom, Random }
+
+internal sealed record SlideshowSettings
+{
+    public bool Enabled { get; init; } = true;
+    public IntervalMode Mode { get; init; } = IntervalMode.ThirtyMinutes;
+    public int CustomMinutes { get; init; } = 30;
+}
 
 internal sealed record WallpaperFolders
 {
@@ -23,6 +31,8 @@ internal sealed record AppSettings
     public string Language { get; init; } = "system";
     public bool StartMinimized { get; init; }
     public string Theme { get; init; } = "system";
+    public string Accent { get; init; } = "system";
+    public SlideshowSettings Slideshow { get; init; } = new();
     public WallpaperFolders Folders { get; init; } = new();
     public Dictionary<string, MonitorSettings> Monitors { get; init; } = new(StringComparer.OrdinalIgnoreCase);
     [JsonExtensionData]

@@ -16,6 +16,9 @@ internal sealed class MainForm : Form
     private readonly CancellationToken shutdown;
     private readonly Dictionary<string, bool> orientations = new(StringComparer.OrdinalIgnoreCase);
     private readonly System.Windows.Forms.Timer displayChangeTimer = new() { Interval = 500 };
+    private readonly System.Windows.Forms.Timer slideshowTimer = new() { Interval = 1000 };
+    private readonly SlideshowSchedule schedule;
+    private Label nextChange = null!;
     private AppSettings settings;
     private IReadOnlyList<MonitorInfo> monitors = Array.Empty<MonitorInfo>();
     private TableLayoutPanel root = null!;
@@ -29,26 +32,30 @@ internal sealed class MainForm : Form
     private bool exiting;
     private readonly Icon applicationIcon = new(typeof(MainForm).Assembly.GetManifestResourceStream("WallpaperLight.Assets.WallpaperLight.ico")!);
 
-    public MainForm(IWallpaperService wallpaper, SettingsService settingsService, SettingsLoadResult loadResult)
+    public MainForm(IWallpaperService wallpaper, SettingsService settingsService, SettingsLoadResult loadResult,
+        SlideshowSchedule? schedule = null)
     {
         this.wallpaper = wallpaper;
         this.settingsService = settingsService;
         this.loadResult = loadResult;
         shutdown = lifetime.Token;
         settings = loadResult.Settings;
+        this.schedule = schedule ?? new SlideshowSchedule();
+        this.schedule.Configure(settings.Slideshow);
         navigator = new WallpaperNavigator(wallpaper);
         Text = "Wallpaper Light";
         Icon = applicationIcon;
-        HandleCreated += (_, _) => Theme.Apply(this, settings.Theme);
+        HandleCreated += (_, _) => Theme.Apply(this, settings.Theme, settings.Accent);
         AutoScaleMode = AutoScaleMode.Dpi;
         AutoScaleDimensions = new SizeF(96, 96);
-        ClientSize = new Size(800, 780);
-        MinimumSize = new Size(480, 400);
+        ClientSize = new Size(820, 820);
+        MinimumSize = new Size(600, 480);
         StartPosition = FormStartPosition.CenterScreen;
         BuildUi();
         tray = new NotifyIcon { Text = "Wallpaper Light", Icon = applicationIcon, ContextMenuStrip = trayMenu, Visible = true };
         tray.DoubleClick += (_, _) => ShowFromTray();
         trayMenu.Opening += (_, _) => BuildTrayMenu();
+        slideshowTimer.Tick += (_, _) => ProcessSlideshowTick();
         displayChangeTimer.Tick += (_, _) =>
         {
             displayChangeTimer.Stop();
@@ -59,20 +66,59 @@ internal sealed class MainForm : Form
 
     public void Start()
     {
+        ShowInTaskbar = !settings.StartMinimized;
         _ = Handle;
         BeginInvoke(() => Run(() => RefreshMonitorsAsync(reactToOrientation: false)));
+        slideshowTimer.Start();
         if (!settings.StartMinimized) Show();
     }
 
+    internal void ProcessSlideshowTick()
+    {
+        UpdateScheduleLabel();
+        if (!schedule.IsDue || busy || OwnedForms.Any(f => f.Visible) || shutdown.IsCancellationRequested) return;
+        long version = schedule.Version;
+        Run(async () =>
+        {
+            try { return await ChangeAllCoreAsync(version); }
+            finally { schedule.Complete(version); UpdateScheduleLabel(); }
+        });
+    }
+
+    internal void ProcessPowerEvent(bool resume, bool newCycle = false)
+    {
+        if (resume) schedule.Resume(newCycle); else schedule.Suspend();
+        UpdateScheduleLabel();
+    }
+
+    private void UpdateScheduleLabel()
+    {
+        if (nextChange is null || nextChange.IsDisposed) return;
+        nextChange.Text = schedule.Remaining is { } remaining
+            ? string.Format(Texts.Get(schedule.AfterResume ? "NextAfterSleep" : "NextScheduled"),
+                DateTime.Now.Add(remaining).ToString("HH:mm")) : Texts.Get("SlideshowPaused");
+    }
+
+    private void ToggleSlideshow() => Run(() =>
+    {
+        var updated = settings with { Slideshow = settings.Slideshow with { Enabled = !settings.Slideshow.Enabled } };
+        settingsService.Save(updated);
+        settings = updated;
+        schedule.Configure(settings.Slideshow);
+        BuildUi();
+        return Task.FromResult(Texts.Get(settings.Slideshow.Enabled ? "SlideshowEnabled" : "SlideshowPaused"));
+    });
+
     public void QueueShowFromTray()
     {
-        try { BeginInvoke(ShowFromTray); }
+        try { BeginInvoke(() => { if (!settings.StartMinimized) ShowFromTray(); }); }
         catch (InvalidOperationException error) { Trace.TraceInformation(error.Message); }
     }
 
     internal void ShowFromTray()
     {
         if (IsDisposed || exiting) return;
+        ShowInTaskbar = true;
         Show();
         if (WindowState == FormWindowState.Minimized) WindowState = FormWindowState.Normal;
         Activate();
@@ -88,6 +134,9 @@ internal sealed class MainForm : Form
         bool available = !busy && !OwnedForms.Any(f => f.Visible);
         var all = trayMenu.Items.Add(Texts.Get("ChangeAll"), null, (_, _) => Run(ChangeAllAsync));
         all.Enabled = available && monitors.Count > 0;
+        var pause = trayMenu.Items.Add(Texts.Get(settings.Slideshow.Enabled ? "PauseSlideshow" : "ResumeSlideshow"),
+            null, (_, _) => ToggleSlideshow());
+        pause.Enabled = available && !settingsService.IsReadOnly;
         for (int i = 0; i < monitors.Count; i++)
         {
             var monitor = monitors[i];
@@ -106,7 +155,7 @@ internal sealed class MainForm : Form
 
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
-        if (e.CloseReason == CloseReason.UserClosing && !exiting) { e.Cancel = true; Hide(); }
+        if (e.CloseReason == CloseReason.UserClosing && !exiting) { e.Cancel = true; Hide(); ShowInTaskbar = false; }
         base.OnFormClosing(e);
     }
 
@@ -116,13 +165,13 @@ internal sealed class MainForm : Form
         try
         {
             root?.Dispose();
-            root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4, Padding = new Padding(16) };
+            root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4, Padding = new Padding(24) };
             root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
             root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            var toolbar = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, Margin = new Padding(0, 0, 0, 8) };
+            var toolbar = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, WrapContents = false, Margin = new Padding(0, 0, 0, 8) };
             toolbar.Controls.Add(Button("Settings", OpenSettings, !settingsService.IsReadOnly));
             toolbar.Controls.Add(Button("RefreshAll", () => Run(async () =>
             {
@@ -131,7 +180,17 @@ internal sealed class MainForm : Form
                 return await RefreshMonitorsAsync(reactToOrientation: true);
             })));
             toolbar.Controls.Add(Button("ChangeAll", () => Run(ChangeAllAsync)));
-            root.Controls.Add(toolbar, 0, 0);
+            var header = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, ColumnCount = 1, Margin = new Padding(0, 0, 0, 16) };
+            header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            header.Controls.Add(new Label { Text = "Wallpaper Light", Font = Theme.TitleFont, AutoSize = true, Margin = new Padding(0,0,0,12) });
+            header.Controls.Add(toolbar);
+            var timerRow = new FlowLayoutPanel { Dock = DockStyle.Top, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, WrapContents = false, Margin = new Padding(0,4,0,0) };
+            timerRow.Controls.Add(Button(settings.Slideshow.Enabled ? "PauseSlideshow" : "ResumeSlideshow", ToggleSlideshow, !settingsService.IsReadOnly));
+            nextChange = new Label { AutoSize = true, Margin = new Padding(12,12,0,0), Tag = "muted" };
+            timerRow.Controls.Add(nextChange);
+            header.Controls.Add(timerRow);
+            root.Controls.Add(header, 0, 0);
+            UpdateScheduleLabel();
             var warning = new Label
             {
                 AutoSize = true, Dock = DockStyle.Top, Margin = new Padding(0, 0, 0, 8),
@@ -157,7 +216,7 @@ internal sealed class MainForm : Form
 
     private static Button Button(string key, Action action, bool enabled = true)
     {
-        var button = new ThemedButton { Text = Texts.Get(key), AutoSize = true, Padding = new Padding(6, 4, 6, 4), Enabled = enabled };
+        var button = new ThemedButton { Text = Texts.Get(key), AutoSize = true, Padding = new Padding(6, 4, 6, 4), Enabled = enabled, Tag = key == "ChangeAll" ? "accent" : null };
         button.Click += (_, _) => action();
         return button;
     }
@@ -178,14 +237,14 @@ internal sealed class MainForm : Form
             }
         }
         finally { cards.ResumeLayout(true); }
-        Theme.Apply(this, settings.Theme);
+        Theme.Apply(this, settings.Theme, settings.Accent);
     }
 
     private async Task<string> RefreshMonitorsAsync(bool reactToOrientation)
     {
         monitors = wallpaper.GetMonitors();
         var outcomes = new List<string>();
-        if (reactToOrientation)
+        if (reactToOrientation && !schedule.AfterResume && !schedule.IsSuspended)
         {
             foreach (var monitor in monitors)
             {
@@ -205,7 +264,7 @@ internal sealed class MainForm : Form
             monitors.Count == 0 ? Texts.Get("NoMonitors") : string.Format(Texts.Get("MonitorCount"), monitors.Count);
     }
 
-    private async Task<ChangeResult> ChangeAsync(MonitorInfo monitor, WallpaperCommand command)
+    private async Task<ChangeResult> ChangeAsync(MonitorInfo monitor, WallpaperCommand command, long? version = null)
     {
         IReadOnlyList<string> files = Array.Empty<string>();
         if (command != WallpaperCommand.Previous)
@@ -215,6 +274,7 @@ internal sealed class MainForm : Form
             files = await catalog.GetAsync(folder, shutdown);
         }
         shutdown.ThrowIfCancellationRequested();
+        if (schedule.IsSuspended || (version.HasValue && schedule.Version != version.Value)) return new("ScheduleDeferred");
         return navigator.Change(monitor, files, settings.ModeFor(monitor.DeviceId), command);
     }
 
@@ -248,14 +308,17 @@ internal sealed class MainForm : Form
         else Run(async () => Describe(await ChangeAsync(monitor, command)));
     }
 
-    private async Task<string> ChangeAllAsync()
+    private Task<string> ChangeAllAsync() => ChangeAllCoreAsync(null);
+
+    private async Task<string> ChangeAllCoreAsync(long? version)
     {
         monitors = wallpaper.GetMonitors();
         var outcomes = new List<string>();
         for (int index = 0; index < monitors.Count; index++)
         {
+            if (schedule.IsSuspended || (version.HasValue && schedule.Version != version.Value)) break;
             string result;
-            try { result = Describe(await ChangeAsync(monitors[index], WallpaperCommand.Next)); }
+            try { result = Describe(await ChangeAsync(monitors[index], WallpaperCommand.Next, version)); }
             catch (Exception error) when (IsExpectedError(error)) { result = error.Message; }
             outcomes.Add($"{Texts.Get("Monitor")} {index + 1}: {result}");
         }
@@ -280,7 +343,9 @@ internal sealed class MainForm : Form
             if (!StringComparer.OrdinalIgnoreCase.Equals(settings.Folders.Portrait, updated.Folders.Portrait))
                 navigator.ResetOrientation(true);
             catalog.Refresh();
+            bool timerChanged = settings.Slideshow != updated.Slideshow;
             settings = updated;
+            if (timerChanged) schedule.Configure(settings.Slideshow);
             Texts.SetLanguage(settings.Language);
             BuildUi();
             if (startupError is null && dialog.StartWithWindows != startupEnabled)
@@ -338,7 +403,13 @@ internal sealed class MainForm : Form
     protected override void WndProc(ref Message message)
     {
         base.WndProc(ref message);
-        if (message.Msg is 0x001A or 0x031A && settings is not null) Theme.Apply(this, settings.Theme);
+        if (message.Msg is 0x001A or 0x031A && settings is not null) Theme.Apply(this, settings.Theme, settings.Accent);
+        if (message.Msg == 0x0218 && schedule is not null)
+        {
+            if (message.WParam.ToInt32() == 4) ProcessPowerEvent(false);
+            else if (message.WParam.ToInt32() is 6 or 18) ProcessPowerEvent(true, true);
+            else if (message.WParam.ToInt32() == 7) ProcessPowerEvent(true);
+        }
         if (message.Msg == 0x007E)
         {
             displayChangeTimer.Stop();
@@ -356,6 +427,7 @@ internal sealed class MainForm : Form
                 lifetime.Dispose();
             }
             displayChangeTimer.Dispose();
+            slideshowTimer.Dispose();
             tray.Visible = false;
             tray.Dispose();
             trayMenu.Dispose();

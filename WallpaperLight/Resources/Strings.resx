@@ -192,4 +192,70 @@
   <data name="Position">
     <value>Position</value>
   </data>
+  <data name="Slideshow">
+    <value>Auto-change</value>
+  </data>
+  <data name="SlideshowEnabled">
+    <value>Enabled</value>
+  </data>
+  <data name="SlideshowPaused">
+    <value>Auto-change paused</value>
+  </data>
+  <data name="PauseSlideshow">
+    <value>Pause</value>
+  </data>
+  <data name="ResumeSlideshow">
+    <value>Resume</value>
+  </data>
+  <data name="Interval">
+    <value>Change every</value>
+  </data>
+  <data name="Interval30">
+    <value>30 minutes</value>
+  </data>
+  <data name="Interval60">
+    <value>60 minutes</value>
+  </data>
+  <data name="IntervalCustom">
+    <value>Custom interval</value>
+  </data>
+  <data name="IntervalRandom">
+    <value>Random: 1–60 minutes</value>
+  </data>
+  <data name="CustomMinutes">
+    <value>Custom: minutes (1–1440)</value>
+  </data>
+  <data name="SleepTimerHint">
+    <value>After sleep: the first change in 1–30 minutes, then the selected interval.</value>
+  </data>
+  <data name="NextScheduled">
+    <value>Next change at {0}</value>
+  </data>
+  <data name="NextAfterSleep">
+    <value>After sleep · next change at {0}</value>
+  </data>
+  <data name="ScheduleDeferred">
+    <value>Waiting for the next scheduled change.</value>
+  </data>
+  <data name="Accent">
+    <value>Accent color</value>
+  </data>
+  <data name="AccentBlue">
+    <value>Blue</value>
+  </data>
+  <data name="AccentTeal">
+    <value>Teal</value>
+  </data>
+  <data name="AccentViolet">
+    <value>Violet</value>
+  </data>
+  <data name="Startup">
+    <value>Startup</value>
+  </data>
+  <data name="Window">
+    <value>Window</value>
+  </data>
+  <data name="SourceFolderShort">
+    <value>Folder</value>
+  </data>
 </root>
